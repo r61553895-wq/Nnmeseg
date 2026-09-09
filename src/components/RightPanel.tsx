@@ -15,6 +15,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from './UserAvatar';
 import { Conversation, Message, User as UserType, RightPanelMode } from '../types';
 
 interface RightPanelProps {
@@ -124,15 +125,13 @@ export const RightPanel: React.FC<RightPanelProps> = ({
           <div className="flex flex-col items-center text-center">
             {/* Avatar & status */}
             <div className="relative mb-3">
-              <img
-                src={displayAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                alt={displayName || ''}
-                referrerPolicy="no-referrer"
-                className="w-20 h-20 rounded-full object-cover border-2 border-zinc-700 shadow-lg"
+              <UserAvatar
+                name={displayName || 'User'}
+                size="xl"
+                isGroup={conversation.type === 'group'}
+                online={otherUser?.online}
+                showStatus={conversation.type === 'direct'}
               />
-              {conversation.type === 'direct' && otherUser?.online && (
-                <span className="absolute bottom-1 right-1 w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-[#0f1118]" />
-              )}
             </div>
 
             <h3 className="text-base font-semibold text-zinc-100">{displayName}</h3>
@@ -220,18 +219,14 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                 {mediaItems.map((item) => (
                   <div
                     key={item.id}
-                    onClick={() => onOpenImage(item.url, item.name)}
-                    className="aspect-square rounded-lg overflow-hidden border border-zinc-800 relative group cursor-pointer"
+                    className="p-3 rounded-xl bg-[#141722] border border-zinc-800 relative flex flex-col items-center justify-center text-center gap-2"
                   >
-                    <img
-                      src={item.url}
-                      alt={item.name}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity">
-                      <ImageIcon size={18} />
+                    <div className="p-2.5 rounded-lg bg-blue-500/10 text-blue-400">
+                      <FileText size={20} />
                     </div>
+                    <span className="text-[11px] text-zinc-300 font-medium truncate max-w-full px-1">
+                      {item.name}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -323,15 +318,12 @@ export const RightPanel: React.FC<RightPanelProps> = ({
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="relative shrink-0">
-                    <img
-                      src={participant.avatar}
-                      alt={participant.name}
-                      referrerPolicy="no-referrer"
-                      className="w-8 h-8 rounded-full object-cover border border-zinc-700"
+                    <UserAvatar
+                      name={participant.name}
+                      size="sm"
+                      online={participant.online}
+                      showStatus={true}
                     />
-                    {participant.online && (
-                      <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-[#0f1118]" />
-                    )}
                   </div>
                   <div className="min-w-0">
                     <div className="text-xs font-medium text-zinc-200 truncate flex items-center gap-1.5">

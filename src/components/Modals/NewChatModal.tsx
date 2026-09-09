@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Search, UserCheck, UserPlus, MessageSquare } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from '../UserAvatar';
 import { User } from '../../types';
 
 interface NewChatModalProps {
@@ -94,15 +95,12 @@ export const NewChatModal: React.FC<NewChatModalProps> = ({
                     }}
                   >
                     <div className="relative shrink-0">
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        referrerPolicy="no-referrer"
-                        className="w-10 h-10 rounded-full object-cover border border-zinc-700"
+                      <UserAvatar
+                        name={user.name}
+                        size="md"
+                        online={user.online}
+                        showStatus={true}
                       />
-                      {user.online && (
-                        <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#13161f]" />
-                      )}
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-medium text-zinc-100 flex items-center gap-1.5">

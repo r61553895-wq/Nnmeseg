@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Users, Check, Image as ImageIcon } from 'lucide-react';
+import { X, Users, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from '../UserAvatar';
 import { User } from '../../types';
 
 interface CreateGroupModalProps {
@@ -10,13 +11,6 @@ interface CreateGroupModalProps {
   onCreateGroup: (name: string, memberIds: string[], description?: string, avatar?: string) => void;
 }
 
-const PRESET_AVATARS = [
-  'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=200&auto=format&fit=crop&q=80',
-];
-
 export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   isOpen,
   onClose,
@@ -25,7 +19,6 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
 }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState(PRESET_AVATARS[0]);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [error, setError] = useState('');
 
@@ -48,7 +41,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
       return;
     }
 
-    onCreateGroup(name.trim(), selectedUserIds, description.trim(), selectedAvatar);
+    onCreateGroup(name.trim(), selectedUserIds, description.trim(), '');
     onClose();
   };
 
@@ -116,24 +109,20 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               />
             </div>
 
-            {/* Avatar Preset Selection */}
+            {/* Group Icon Preview */}
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
-                Cover Visual
+                Group Icon
               </label>
               <div className="flex items-center gap-3">
-                {PRESET_AVATARS.map((url, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setSelectedAvatar(url)}
-                    className={`relative rounded-xl overflow-hidden w-12 h-12 border-2 transition-all ${
-                      selectedAvatar === url ? 'border-blue-500 scale-105 shadow-md shadow-blue-500/20' : 'border-zinc-800 opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={url} alt="preset" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-                  </button>
-                ))}
+                <UserAvatar
+                  name={name.trim() || 'Group'}
+                  size="lg"
+                  isGroup={true}
+                />
+                <span className="text-xs text-zinc-400">
+                  {name.trim() ? `Auto-generated visual for "${name.trim()}"` : 'Type a group name to generate visual identifier'}
+                </span>
               </div>
             </div>
 
@@ -155,11 +144,9 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                       className="flex items-center justify-between p-2 rounded-lg cursor-pointer hover:bg-zinc-800/60 transition-colors"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <img
-                          src={user.avatar}
-                          alt={user.name}
-                          referrerPolicy="no-referrer"
-                          className="w-8 h-8 rounded-full object-cover border border-zinc-700"
+                        <UserAvatar
+                          name={user.name}
+                          size="sm"
                         />
                         <div className="min-w-0">
                           <div className="text-sm font-medium text-zinc-200 truncate">{user.name}</div>

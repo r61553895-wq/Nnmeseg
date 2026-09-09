@@ -15,6 +15,7 @@ import { messengerService } from './services/messengerService';
 import { firestoreMessengerService } from './services/firestoreMessengerService';
 import { auth, onAuthStateChanged, testConnection, type FirebaseUser } from './firebase';
 import { AuthModal } from './components/Modals/AuthModal';
+import { UserAvatar } from './components/UserAvatar';
 import { Database, LogIn, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Conversation, Message, User, AppSettings, MessageAttachment } from './types';
 
@@ -329,7 +330,7 @@ export default function App() {
       const newId = await firestoreMessengerService.createConversation({
         type: 'group',
         name,
-        avatar: avatar || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=150&auto=format&fit=crop&q=80',
+        avatar: avatar || '',
         participantIds: [firebaseUser.uid, ...memberIds],
         participants: allMembers,
         createdBy: firebaseUser.uid,
@@ -401,11 +402,9 @@ export default function App() {
               title="Firebase Firestore Cloud Connected - Manage Account"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <img
-                src={firebaseUser.photoURL || currentUser.avatar}
-                alt="Avatar"
-                referrerPolicy="no-referrer"
-                className="w-4 h-4 rounded-full object-cover"
+              <UserAvatar
+                name={firebaseUser.displayName || currentUser.name}
+                size="xs"
               />
               <span className="font-semibold text-white truncate max-w-[120px]">
                 {firebaseUser.displayName || currentUser.name}
@@ -451,7 +450,7 @@ export default function App() {
                     className="px-2 py-0.5 rounded text-[11px] bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 transition-all flex items-center gap-1.5"
                     title={settings.language === 'ru' ? `Войти как ${u.name}` : `Switch to ${u.name}`}
                   >
-                    <img src={u.avatar} alt={u.name} className="w-3.5 h-3.5 rounded-full object-cover" />
+                    <UserAvatar name={u.name} size="xs" />
                     <span className="truncate max-w-[70px]">{u.name.split(' ')[0]}</span>
                   </button>
                 ))}

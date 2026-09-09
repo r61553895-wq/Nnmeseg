@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, LogIn, LogOut, CheckCircle2, ShieldCheck, Database, Sparkles, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from '../UserAvatar';
 import { auth, googleProvider, signInWithPopup, signOut, type FirebaseUser } from '../../firebase';
 import { User } from '../../types';
 
@@ -94,11 +95,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             {firebaseUser ? (
               <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 flex items-center gap-3.5">
-                  <img
-                    src={firebaseUser.photoURL || currentUser.avatar}
-                    alt={firebaseUser.displayName || 'User'}
-                    referrerPolicy="no-referrer"
-                    className="w-12 h-12 rounded-full object-cover border border-emerald-500/40"
+                  <UserAvatar
+                    name={firebaseUser.displayName || currentUser.name}
+                    size="lg"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">

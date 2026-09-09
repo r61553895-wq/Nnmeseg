@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Camera, Check, User as UserIcon, Sparkles } from 'lucide-react';
+import { X, Check, User as UserIcon, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from '../UserAvatar';
 import { User } from '../../types';
 
 interface ProfileModalProps {
@@ -9,15 +10,6 @@ interface ProfileModalProps {
   currentUser: User;
   onSaveProfile: (updates: Partial<User>) => void;
 }
-
-const AVATAR_PRESETS = [
-  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&auto=format&fit=crop&q=80',
-];
 
 export const ProfileModal: React.FC<ProfileModalProps> = ({
   isOpen,
@@ -29,7 +21,6 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
   const [username, setUsername] = useState(currentUser.username);
   const [bio, setBio] = useState(currentUser.bio || '');
   const [statusMessage, setStatusMessage] = useState(currentUser.statusMessage || '');
-  const [avatar, setAvatar] = useState(currentUser.avatar);
   const [phone, setPhone] = useState(currentUser.phone || '');
   const [savedNotice, setSavedNotice] = useState(false);
 
@@ -42,14 +33,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
       username: username.trim().toLowerCase().replace(/\s+/g, '_'),
       bio: bio.trim(),
       statusMessage: statusMessage.trim(),
-      avatar,
+      avatar: '',
       phone: phone.trim(),
     });
     setSavedNotice(true);
     setTimeout(() => {
       setSavedNotice(false);
       onClose();
-    }, 600);
+    }, 800);
   };
 
   return (
@@ -79,35 +70,15 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           </div>
 
           <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
-            {/* Avatar section */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative group">
-                <img
-                  src={avatar}
-                  alt={name}
-                  referrerPolicy="no-referrer"
-                  className="w-20 h-20 rounded-full object-cover border-2 border-zinc-700 shadow-lg"
-                />
-                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                  <Camera size={20} className="text-white" />
-                </div>
-              </div>
-
-              {/* Avatar presets */}
-              <div className="flex items-center gap-2">
-                {AVATAR_PRESETS.map((p, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setAvatar(p)}
-                    className={`w-7 h-7 rounded-full overflow-hidden border-2 transition-all ${
-                      avatar === p ? 'border-blue-500 scale-110' : 'border-zinc-800 opacity-60 hover:opacity-100'
-                    }`}
-                  >
-                    <img src={p} alt="preset" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
+            {/* Avatar visual identifier */}
+            <div className="flex flex-col items-center gap-2">
+              <UserAvatar
+                name={name || 'User'}
+                size="xl"
+              />
+              <span className="text-xs text-zinc-400">
+                Visual profile generated from display name
+              </span>
             </div>
 
             {/* Fields */}

@@ -28,6 +28,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Conversation, Message, User, MessageAttachment, AppSettings } from '../types';
 import { VoicePlayer } from './VoicePlayer';
+import { UserAvatar } from './UserAvatar';
 import { createSyntheticVoiceBlobUrl } from '../utils/audioVoiceHelper';
 import { translations } from '../utils/i18n';
 
@@ -176,33 +177,33 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   const handleAttachImagePreset = (presetType: 'architectural' | 'code' | 'minimal') => {
     setShowAttachMenu(false);
-    let sampleImg = {
+    let sampleDoc: MessageAttachment = {
       id: `att_${Date.now()}`,
-      type: 'image' as const,
-      url: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop&q=80',
-      name: 'vesper_schematic.jpg',
-      size: '2.1 MB',
+      type: 'file',
+      url: '#',
+      name: 'vesper_schematic.json',
+      size: '24 KB',
     };
 
     if (presetType === 'code') {
-      sampleImg = {
+      sampleDoc = {
         id: `att_${Date.now()}`,
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80',
-        name: 'syntax_engine.png',
-        size: '1.4 MB',
+        type: 'file',
+        url: '#',
+        name: 'syntax_engine.ts',
+        size: '18 KB',
       };
     } else if (presetType === 'minimal') {
-      sampleImg = {
+      sampleDoc = {
         id: `att_${Date.now()}`,
-        type: 'image',
-        url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&auto=format&fit=crop&q=80',
-        name: 'editorial_craft.jpg',
-        size: '3.8 MB',
+        type: 'file',
+        url: '#',
+        name: 'editorial_spec.pdf',
+        size: '142 KB',
       };
     }
 
-    onSendMessage('Visual asset reference attached:', [sampleImg]);
+    onSendMessage('Document specification attached:', [sampleDoc]);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -348,15 +349,13 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
           {/* Avatar & presence */}
           <div className="relative shrink-0 cursor-pointer" onClick={onToggleRightPanel}>
-            <img
-              src={chatAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-              alt={chatTitle || ''}
-              referrerPolicy="no-referrer"
-              className="w-10 h-10 rounded-full object-cover border border-zinc-700/80"
+            <UserAvatar
+              name={chatTitle || 'Chat'}
+              size="md"
+              isGroup={conversation.type === 'group'}
+              online={isOnline}
+              showStatus={conversation.type === 'direct'}
             />
-            {isOnline && (
-              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#101217]" />
-            )}
           </div>
 
           <div className="min-w-0 cursor-pointer" onClick={onToggleRightPanel}>
@@ -557,13 +556,11 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 <div className={`flex items-end gap-2 max-w-[85%] md:max-w-[70%]`}>
                   {/* Avatar for incoming: only on last message of group */}
                   {!isMe && (
-                    <div className="w-8 shrink-0">
+                    <div className="w-8 shrink-0 mb-0.5">
                       {!isSameSenderAsNext ? (
-                        <img
-                          src={senderUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                          alt={senderUser?.name || ''}
-                          referrerPolicy="no-referrer"
-                          className="w-8 h-8 rounded-full object-cover border border-zinc-700/80 mb-0.5"
+                        <UserAvatar
+                          name={senderUser?.name || 'User'}
+                          size="sm"
                         />
                       ) : (
                         <div className="w-8" />
@@ -617,25 +614,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                                 duration={att.duration}
                                 isMe={isMe}
                               />
-                            );
-                          }
-                          if (att.type === 'image') {
-                            return (
-                              <div
-                                key={att.id}
-                                onClick={() => onOpenImage(att.url, att.name)}
-                                className="rounded-xl overflow-hidden border border-black/20 cursor-pointer max-w-sm max-h-72 group/img relative"
-                              >
-                                <img
-                                  src={att.url}
-                                  alt={att.name}
-                                  referrerPolicy="no-referrer"
-                                  className="w-full h-full object-cover transition-transform group-hover/img:scale-102"
-                                />
-                                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/img:opacity-100 flex items-center justify-center text-white transition-opacity">
-                                  <ImageIcon size={22} />
-                                </div>
-                              </div>
                             );
                           }
                           return (
@@ -938,21 +916,21 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                       onClick={() => handleAttachImagePreset('architectural')}
                       className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-zinc-800 text-left text-zinc-300"
                     >
-                      <ImageIcon size={14} className="text-emerald-400" />
+                      <FileText size={14} className="text-emerald-400" />
                       <span>{t.vesperSchematic}</span>
                     </button>
                     <button
                       onClick={() => handleAttachImagePreset('code')}
                       className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-zinc-800 text-left text-zinc-300"
                     >
-                      <ImageIcon size={14} className="text-cyan-400" />
+                      <FileText size={14} className="text-cyan-400" />
                       <span>{t.codeSpec}</span>
                     </button>
                     <button
                       onClick={() => handleAttachImagePreset('minimal')}
                       className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-zinc-800 text-left text-zinc-300"
                     >
-                      <ImageIcon size={14} className="text-purple-400" />
+                      <FileText size={14} className="text-purple-400" />
                       <span>{t.editorialVisual}</span>
                     </button>
                   </div>

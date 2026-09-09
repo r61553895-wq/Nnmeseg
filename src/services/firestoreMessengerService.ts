@@ -30,7 +30,7 @@ export class FirestoreMessengerService {
       id: fbUser.uid,
       username: (fbUser.email?.split('@')[0] || fbUser.displayName?.toLowerCase().replace(/\s+/g, '_') || 'user').slice(0, 30),
       name: fbUser.displayName || fbUser.email?.split('@')[0] || 'User',
-      avatar: fbUser.photoURL || `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
+      avatar: '',
       email: fbUser.email || undefined,
       online: true,
       lastSeen: new Date().toISOString(),

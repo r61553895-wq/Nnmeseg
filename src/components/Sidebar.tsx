@@ -16,6 +16,7 @@ import {
   MessageSquarePlus
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { UserAvatar } from './UserAvatar';
 import { Conversation, User, AppSettings } from '../types';
 import { translations } from '../utils/i18n';
 
@@ -111,11 +112,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           title="View & Edit Profile"
         >
           <div className="relative">
-            <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
-              referrerPolicy="no-referrer"
-              className="w-8 h-8 rounded-full object-cover border border-zinc-700/80 group-hover:border-zinc-500 transition-colors"
+            <UserAvatar
+              name={currentUser.name}
+              size="sm"
             />
             <span
               className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ring-2 ring-[#101218] ${
@@ -270,15 +269,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 {/* Avatar with online indicator */}
                 <div className="relative shrink-0">
-                  <img
-                    src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                    alt={title || ''}
-                    referrerPolicy="no-referrer"
-                    className="w-11 h-11 rounded-full object-cover border border-zinc-700/60"
+                  <UserAvatar
+                    name={title || 'Chat'}
+                    size="md"
+                    isGroup={conv.type === 'group'}
+                    online={isOnline}
+                    showStatus={conv.type === 'direct'}
                   />
-                  {isOnline && (
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-[#101218]" />
-                  )}
                   {conv.type === 'group' && (
                     <span className="absolute bottom-0 right-0 p-0.5 rounded-full bg-zinc-800 text-zinc-300 ring-2 ring-[#101218]">
                       <Users size={10} />

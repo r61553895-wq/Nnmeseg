@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { PhoneOff, Mic, MicOff, Video, VideoOff, Volume2, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from '../UserAvatar';
 import { Conversation, User } from '../../types';
 
 interface CallModalProps {
@@ -76,11 +77,10 @@ export const CallModal: React.FC<CallModalProps> = ({ isOpen, conversation, curr
                 className="absolute inset-0 rounded-full bg-blue-500/20 -m-2.5"
               />
             )}
-            <img
-              src={displayAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-              alt={displayName}
-              referrerPolicy="no-referrer"
-              className="w-24 h-24 rounded-full object-cover border-2 border-zinc-700 shadow-lg relative z-10"
+            <UserAvatar
+              name={displayName}
+              size="xl"
+              isGroup={conversation.type === 'group'}
             />
           </div>
 

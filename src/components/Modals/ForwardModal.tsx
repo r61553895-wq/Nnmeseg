@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Search, Forward, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UserAvatar } from '../UserAvatar';
 import { Conversation, Message, User } from '../../types';
 
 interface ForwardModalProps {
@@ -107,11 +108,10 @@ export const ForwardModal: React.FC<ForwardModalProps> = ({
                     className="flex items-center justify-between p-2.5 rounded-xl hover:bg-zinc-800/60 cursor-pointer transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <img
-                        src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}
-                        alt={title || ''}
-                        referrerPolicy="no-referrer"
-                        className="w-9 h-9 rounded-full object-cover border border-zinc-700 shrink-0"
+                      <UserAvatar
+                        name={title || 'Chat'}
+                        size="md"
+                        isGroup={c.type === 'group'}
                       />
                       <div className="min-w-0">
                         <div className="text-sm font-medium text-zinc-100 truncate">{title}</div>
