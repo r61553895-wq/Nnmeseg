@@ -1,0 +1,6 @@
+{
+  "name": "Vesper Messenger",
+  "description": "A refined, premium real-time web messenger with discreet craft, deep graphite aesthetics, and fluid micro-interactions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

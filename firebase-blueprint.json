@@ -1,0 +1,203 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public user profile and presence information",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Auth UID of the user",
+          "maxLength": 128
+        },
+        "name": {
+          "type": "string",
+          "description": "Display name of the user",
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user",
+          "maxLength": 120
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Avatar URL or preset identifier",
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "description": "Presence state",
+          "enum": ["online", "offline", "away"]
+        },
+        "bio": {
+          "type": "string",
+          "description": "Short bio or status text",
+          "maxLength": 200
+        },
+        "lastSeen": {
+          "type": "string",
+          "description": "Timestamp string of last activity",
+          "maxLength": 50
+        }
+      },
+      "required": ["id", "name", "email"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Direct dialogue or group channel thread",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique conversation identifier",
+          "maxLength": 128
+        },
+        "type": {
+          "type": "string",
+          "description": "Type of conversation",
+          "enum": ["direct", "group"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of dialogue or group title",
+          "maxLength": 100
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Conversation avatar URL",
+          "maxLength": 500
+        },
+        "participantIds": {
+          "type": "array",
+          "description": "List of participant user IDs"
+        },
+        "lastMessageText": {
+          "type": "string",
+          "description": "Preview of last message sent",
+          "maxLength": 2000
+        },
+        "lastMessageTime": {
+          "type": "string",
+          "description": "Timestamp of last message",
+          "maxLength": 50
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp",
+          "maxLength": 50
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "Creator user UID",
+          "maxLength": 128
+        }
+      },
+      "required": ["id", "type", "participantIds"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Single message inside a conversation",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique message ID",
+          "maxLength": 128
+        },
+        "conversationId": {
+          "type": "string",
+          "description": "Parent conversation ID",
+          "maxLength": 128
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Sender user UID",
+          "maxLength": 128
+        },
+        "senderName": {
+          "type": "string",
+          "description": "Sender display name",
+          "maxLength": 100
+        },
+        "senderAvatar": {
+          "type": "string",
+          "description": "Sender avatar image URL",
+          "maxLength": 500
+        },
+        "text": {
+          "type": "string",
+          "description": "Message text body",
+          "maxLength": 10000
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp string of message creation",
+          "maxLength": 50
+        },
+        "status": {
+          "type": "string",
+          "description": "Message status",
+          "enum": ["sending", "sent", "delivered", "read"]
+        },
+        "replyToId": {
+          "type": "string",
+          "description": "Referenced reply message ID",
+          "maxLength": 128
+        },
+        "replyToText": {
+          "type": "string",
+          "description": "Quoted text preview",
+          "maxLength": 300
+        },
+        "replyToSenderName": {
+          "type": "string",
+          "description": "Quoted sender name",
+          "maxLength": 100
+        },
+        "isPinned": {
+          "type": "boolean",
+          "description": "Whether message is pinned in chat"
+        },
+        "isEdited": {
+          "type": "boolean",
+          "description": "Whether message was modified"
+        },
+        "attachmentUrl": {
+          "type": "string",
+          "description": "Attachment link or audio blob URL",
+          "maxLength": 500000
+        },
+        "attachmentType": {
+          "type": "string",
+          "description": "Attachment media type",
+          "enum": ["image", "file", "audio"]
+        },
+        "attachmentName": {
+          "type": "string",
+          "description": "Attachment file title",
+          "maxLength": 200
+        },
+        "attachmentDuration": {
+          "type": "number",
+          "description": "Voice audio duration in seconds"
+        }
+      },
+      "required": ["id", "conversationId", "senderId", "senderName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and presence information"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "Direct dialogues and group chat rooms"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Real-time messages sent within conversation threads"
+    }
+  }
+}
