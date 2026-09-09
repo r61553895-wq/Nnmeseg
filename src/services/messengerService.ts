@@ -30,19 +30,28 @@ class MessengerService {
   private syncChannel: BroadcastChannel | null = null;
 
   constructor() {
-    this.currentUser = this.load(STORAGE_KEYS.CURRENT_USER, INITIAL_CURRENT_USER);
-    this.users = this.load(STORAGE_KEYS.USERS, INITIAL_USERS);
-    this.conversations = this.load(STORAGE_KEYS.CONVERSATIONS, INITIAL_CONVERSATIONS);
-    this.messages = this.load(STORAGE_KEYS.MESSAGES, INITIAL_MESSAGES);
-    this.settings = this.load(STORAGE_KEYS.SETTINGS, {
-      language: 'ru',
-      theme: 'dark',
-      soundEnabled: true,
-      notificationsEnabled: true,
-      sendOnEnter: true,
-      compactMode: false,
-      presenceStatus: 'online',
-    });
+    const rawUser = this.load(STORAGE_KEYS.CURRENT_USER, INITIAL_CURRENT_USER);
+    this.currentUser = (rawUser && rawUser.id) ? rawUser : INITIAL_CURRENT_USER;
+
+    const rawUsers = this.load(STORAGE_KEYS.USERS, INITIAL_USERS);
+    this.users = Array.isArray(rawUsers) && rawUsers.length > 0 ? rawUsers : INITIAL_USERS;
+
+    const rawConvs = this.load(STORAGE_KEYS.CONVERSATIONS, INITIAL_CONVERSATIONS);
+    this.conversations = Array.isArray(rawConvs) && rawConvs.length > 0 ? rawConvs : INITIAL_CONVERSATIONS;
+
+    const rawMsgs = this.load(STORAGE_KEYS.MESSAGES, INITIAL_MESSAGES);
+    this.messages = (rawMsgs && typeof rawMsgs === 'object') ? rawMsgs : INITIAL_MESSAGES;
+
+    const rawSettings = this.load<Partial<AppSettings> | null>(STORAGE_KEYS.SETTINGS, null);
+    this.settings = {
+      language: rawSettings?.language || 'ru',
+      theme: rawSettings?.theme || 'dark',
+      soundEnabled: rawSettings?.soundEnabled !== false,
+      notificationsEnabled: rawSettings?.notificationsEnabled !== false,
+      sendOnEnter: rawSettings?.sendOnEnter !== false,
+      compactMode: Boolean(rawSettings?.compactMode),
+      presenceStatus: rawSettings?.presenceStatus || 'online',
+    };
 
     soundFx.enabled = this.settings.soundEnabled;
     this.syncConversationParticipants();
@@ -129,23 +138,30 @@ class MessengerService {
   }
 
   private syncConversationParticipants() {
-    const allUsers = [this.currentUser, ...this.users];
+    if (!Array.isArray(this.conversations)) {
+      this.conversations = INITIAL_CONVERSATIONS;
+    }
+    const allUsers = [this.currentUser, ...(Array.isArray(this.users) ? this.users : [])].filter(Boolean);
     const userMap = new Map(allUsers.map((u) => [u.id, u]));
 
-    this.conversations = this.conversations.map((c) => {
-      const participants = c.participantIds
-        .map((id) => userMap.get(id))
-        .filter((u): u is User => Boolean(u));
-      
-      const convMsgs = this.messages[c.id] || [];
-      const lastMsg = convMsgs[convMsgs.length - 1];
+    this.conversations = this.conversations
+      .filter((c): c is Conversation => Boolean(c && c.id))
+      .map((c) => {
+        const participantIds = Array.isArray(c.participantIds) ? c.participantIds : [];
+        const participants = participantIds
+          .map((id) => userMap.get(id))
+          .filter((u): u is User => Boolean(u));
+        
+        const convMsgs = (this.messages && c.id && this.messages[c.id]) || [];
+        const lastMsg = convMsgs[convMsgs.length - 1];
 
-      return {
-        ...c,
-        participants,
-        lastMessage: lastMsg || c.lastMessage,
-      };
-    });
+        return {
+          ...c,
+          participantIds,
+          participants: participants.length > 0 ? participants : (c.participants || []),
+          lastMessage: lastMsg || c.lastMessage,
+        };
+      });
   }
 
   // --- Auth & Profile ---

@@ -140,18 +140,23 @@ export default function App() {
 
   // Firebase Auth State Listener
   useEffect(() => {
-    const unsubAuth = onAuthStateChanged(auth, async (fbUser) => {
-      setFirebaseUser(fbUser);
-      if (fbUser) {
-        try {
-          const profile = await firestoreMessengerService.syncUserProfile(fbUser);
-          setCurrentUser(profile);
-        } catch (err) {
-          console.error('Failed to sync user profile:', err);
+    if (!auth) return;
+    try {
+      const unsubAuth = onAuthStateChanged(auth, async (fbUser) => {
+        setFirebaseUser(fbUser);
+        if (fbUser) {
+          try {
+            const profile = await firestoreMessengerService.syncUserProfile(fbUser);
+            setCurrentUser(profile);
+          } catch (err) {
+            console.error('Failed to sync user profile:', err);
+          }
         }
-      }
-    });
-    return () => unsubAuth();
+      });
+      return () => unsubAuth();
+    } catch (e) {
+      console.warn('Firebase auth listener could not be registered:', e);
+    }
   }, []);
 
   // Subscribe to Firestore users & conversations when logged into Firebase
@@ -294,7 +299,7 @@ export default function App() {
     if (firebaseUser) {
       const target = users.find((u) => u.id === userId);
       if (!target) return;
-      const existing = conversations.find((c) => c.type === 'direct' && c.participantIds.includes(userId));
+      const existing = conversations.find((c) => c.type === 'direct' && (c.participantIds || []).includes(userId));
       if (existing) {
         setActiveConversationId(existing.id);
       } else {
@@ -386,7 +391,7 @@ export default function App() {
     refreshMessages(convs[0]?.id || null);
   };
 
-  const activeConversation = conversations.find((c) => c.id === activeConversationId) || null;
+  const activeConversation = conversations.find((c) => c.id === activeConversationId) || conversations[0] || null;
   const activeTyping = activeConversationId ? typingMap[activeConversationId] || [] : [];
 
   return (
